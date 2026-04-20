@@ -18,7 +18,7 @@ export const getGithubAccessToken = async () => {
     const account=await prisma.account.findFirst({
         where: {
             userId: session.user.id,
-            provider: "github",
+            providerId: "github",
         },
     });
     if (!account?.accessToken) {
@@ -31,7 +31,8 @@ export const getGithubAccessToken = async () => {
 
 export async function fetchUserContribution(token: string, username: string) {
     const octokit = new Octokit({ auth: token });
-    const query = `
+   // ✅ Fixed
+const query = `
     query($username: String!) {
         user(login: $username) {
             contributionsCollection {
@@ -44,9 +45,11 @@ export async function fetchUserContribution(token: string, username: string) {
                             color
                         }
                     }
-}   }               }
-    
-    `;  
+                }
+            }
+        }
+    }
+`
     interface contributiondata {
     user: {
         contributionsCollection: {

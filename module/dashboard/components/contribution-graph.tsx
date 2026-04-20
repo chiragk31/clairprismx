@@ -1,0 +1,68 @@
+"use client";
+
+import React, { use } from 'react'
+import { ActivityCalendar } from 'react-activity-calendar'
+import { useTheme } from 'next-themes';
+import { getContributionStats } from '../actions';
+import { useQuery } from '@tanstack/react-query';
+
+const ContributionGraph = () => {
+    const { theme } = useTheme();
+    const { data, isLoading } = useQuery({ 
+        queryKey: ['contribution-stats'],
+        queryFn: async () => await getContributionStats(),
+        refetchOnWindowFocus: false,
+        staleTime:1000*60*5,
+    });
+    if (isLoading) {
+        return (<div className='w-full flex flex-col items-center justify-center p-8'>
+            <div className='animate-pulse text-muted-foreground'>
+
+            Loading...</div>
+            </div>
+    
+        )
+    }
+    
+    if (!data || !data.contributions.length)    {
+        return (<div className='w-full flex flex-col items-center justify-center p-8'>
+            <div className='text-muted-foreground'>No contribution data available.</div>
+        </div>)
+    }
+
+  return (
+      <div className='w-full flex flex-col items-center gap-4 p-4'>
+          
+          <div className='text-sm text-muted-foreground'>
+              <span className='font-semibold text-foreground'>
+                  {data.totalContributions}
+              </span>
+              contributions in the last year
+              
+          </div>
+          
+          <div className='w-full overflow-x-auto'>
+              <div className='flex justify-center min-w-max px-4'>
+                  <ActivityCalendar
+                      data={data.contributions}
+                      colorScheme={theme === 'dark' ? 'dark' : 'light'}
+                      blockSize={11}
+                      blockMargin={4}
+                      fontSize={14}
+                      showWeekdayLabels
+                      showMonthLabels
+                      theme={{
+                          light: ['hsl(0,0%,92%)','hsl(318,100%,50%)'],
+                          dark:['#161b22','hsl(280,98%,57%)']
+                      }}
+                  />
+              </div>
+              
+          </div>
+
+    </div>
+  )
+}
+//hsl(142,71%,45%)
+
+export default ContributionGraph
