@@ -14,10 +14,13 @@ function DropdownMenuPortal({ ...props }: MenuPrimitive.Portal.Props) {
   return <MenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />
 }
 
+// function DropdownMenuTrigger({ asChild,...props }: MenuPrimitive.Trigger.Props) {
+//   return <MenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props} />
+// }
 function DropdownMenuTrigger({ ...props }: MenuPrimitive.Trigger.Props) {
-  return <MenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props} />
+  const { asChild, ...rest } = props as typeof props & { asChild?: unknown }
+  return <MenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...rest} />
 }
-
 function DropdownMenuContent({
   align = "start",
   alignOffset = 0,
