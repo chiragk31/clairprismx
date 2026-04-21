@@ -103,8 +103,8 @@ const MainPage = () => {
                 <div className='h-80 w-full flex items-center justify-center'>
                   <Spinner/></div>
               ) : (
-                  <div className='h-80 w-full'>
-                    <ResponsiveContainer width="100%" height="100%">
+                  <div className='h-80 w-full min-h-0]:'>
+                    <ResponsiveContainer width="100%" height={320} minWidth={0}>
                       <BarChart data={monthlyActivity || [] } margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" />
@@ -113,9 +113,9 @@ const MainPage = () => {
                         contentStyle={{backgroundColor:'var(--background)',borderColor:'var(--border)'}} itemStyle={{color:'var(--foreground)'}}
                         />
                         <Legend />
-                        <Bar dataKey="commits" name="Commits" fill="#8884d8"  radius={[4,4,0,0]}/>
-                        <Bar dataKey="prs" name="Pull Requests" fill="#82ca9d" radius={[4,4,0,0]}/>
-                        <Bar dataKey="reviews" name="Reviews" fill="#ffc658" radius={[4,4,0,0]}/>
+                        <Bar dataKey="commits" name="Commits" fill="#ff599b"  radius={[4,4,0,0]}/>
+                        <Bar dataKey="prs" name="Pull Requests" fill="#59ff9e" radius={[4,4,0,0]}/>
+                        <Bar dataKey="reviews" name="Reviews" fill="#dd63ff" radius={[4,4,0,0]}/>
                       </BarChart>
 
                       </ResponsiveContainer>
