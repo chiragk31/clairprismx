@@ -5,6 +5,8 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { createWebhook, getRepositories } from "@/module/github/lib/github";
 import { create } from "domain";
+import { inngest } from "@/inngest/client";
+import { use } from "react";
 
 export const fetchRepositories = async (
   page: number = 1,
@@ -27,6 +29,47 @@ export const fetchRepositories = async (
     isConnected: connectedRepoIds.has(BigInt(repo.id)),
   }));
 };
+// export const connectRepository = async (
+//   owner: string,
+//   repo: string,
+//   githubId: number,
+// ) => {
+//   const session = await auth.api.getSession({ headers: await headers() });
+//   if (!session) {
+//     throw new Error("User is not authenticated");
+//   }
+//   //TODO: CHECK IF USER CAN CONNECT MORE REPO __SUBSCRIPTION CHECK
+//   const webhook = await createWebhook(owner, repo);
+//   if (webhook) {
+//     await prisma.repository.create({
+//       data: {
+//         githubId: BigInt(githubId),
+//         name: repo,
+//         owner,
+//         fullName: `${owner}/${repo}`,
+//         url: `https://github.com/${owner}/${repo}`,
+//         userId: session.user.id,
+//       },
+//     });
+//   }
+//   //TODO: INCREMENT REPO COUNT FOR USAGE TRACK
+//   //TRIGGER REPO INDEXING FOR RAG
+//   try {
+//     await inngest.send({
+//       name: "repository.connected",
+//       data: {
+//         owner,
+//         repo,
+//         userId: session.user.id,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Error indexing repository:", error);
+//   }
+
+//   return webhook;
+// };
+
 export const connectRepository = async (
   owner: string,
   repo: string,
@@ -36,11 +79,13 @@ export const connectRepository = async (
   if (!session) {
     throw new Error("User is not authenticated");
   }
-  //TODO: CHECK IF USER CAN CONNECT MORE REPO __SUBSCRIPTION CHECK
+
   const webhook = await createWebhook(owner, repo);
   if (webhook) {
-    await prisma.repository.create({
-      data: {
+    await prisma.repository.upsert({
+      where: { githubId: BigInt(githubId) },
+      update: {},
+      create: {
         githubId: BigInt(githubId),
         name: repo,
         owner,
@@ -50,8 +95,19 @@ export const connectRepository = async (
       },
     });
   }
-  //TODO: INCREMENT REPO COUNT FOR USAGE TRACK
-  //TODO: TRIGGER REPO INDEXING FOR RAG
+
+  try {
+    await inngest.send({
+      name: "repository.connected",
+      data: {
+        owner,
+        repo,
+        userId: session.user.id,
+      },
+    });
+  } catch (error) {
+    console.error("Error indexing repository:", error);
+  }
 
   return webhook;
 };

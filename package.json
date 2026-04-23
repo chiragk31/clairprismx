@@ -11,6 +11,7 @@
   "dependencies": {
     "@ai-sdk/google": "^3.0.64",
     "@base-ui/react": "^1.4.0",
+    "@google/genai": "^1.50.1",
     "@pinecone-database/pinecone": "^7.2.0",
     "@prisma/adapter-pg": "^7.7.0",
     "@prisma/client": "^7.7.0",
@@ -23,7 +24,7 @@
     "date-fns": "^4.1.0",
     "dotenv": "^17.4.2",
     "embla-carousel-react": "^8.6.0",
-    "inngest": "^4.2.4",
+    "inngest": "3.47.0",
     "input-otp": "^1.4.2",
     "lucide-react": "^1.8.0",
     "next": "16.2.4",

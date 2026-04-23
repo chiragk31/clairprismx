@@ -29,6 +29,7 @@ const RepositoryPage = () => {
 	const [localConnectingId, setLocalConnectingId] = useState<number | null>(null);
 	const handleConnect = async (repo: Repository) => {
 		setLocalConnectingId(repo.id);
+
 		connectRepository({
 			owner: repo.full_name.split('/')[0],
 			repo: repo.name,
