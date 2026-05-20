@@ -3,8 +3,11 @@
 import { inngest } from "@/inngest/client";
 import prisma from "@/lib/db";
 import { getPullRequestDiff } from "@/module/github/lib/github";
-import { success } from "better-auth";
-import { get } from "http";
+
+import {
+  canCreateReview,
+  incrementReviewCount,
+} from "@/module/payment/lib/subscription";
 
 export async function reviewPullRequest(
   owner: string,
@@ -33,6 +36,13 @@ export async function reviewPullRequest(
     if (!repository) {
       throw new Error("Repository not found");
     }
+
+    const canReview = await canCreateReview(repository.user.id, repository.id);
+    if (!canReview) {
+      throw new Error(
+        "Review limit reached for this repository. Plz Upgrade your plan to add more reviews.",
+      );
+    }
     const githubAccount = repository.user.accounts[0];
     if (!githubAccount) {
       throw new Error("GitHub account not found");
@@ -51,6 +61,8 @@ export async function reviewPullRequest(
         userId: repository.userId,
       },
     });
+
+    await incrementReviewCount(repository.user.id, repository.id);
     return { success: true, message: "review Queued" };
   } catch (error) {
     try {
